@@ -11,7 +11,7 @@ func main() {
 		c.HTML(http.StatusOK, "<h1>Hello Egg</h1>")
 	})
 	r.Get("/hello", func(c *egg.Context) {
-		// expect /hello?name=egg
+		// expect /hello?name=egg-web
 		c.String(http.StatusOK, "Welcome come to %s,dear %s", c.Path, c.Query("name"))
 	})
 
