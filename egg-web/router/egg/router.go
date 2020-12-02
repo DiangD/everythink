@@ -52,6 +52,7 @@ func (r *router) handle(c *Context) {
 	}
 }
 
+//important!!! /hello/:name <=> /hello/world
 func (r *router) getRouter(method, path string) (*node, map[string]string) {
 	searchParts := parsePattern(path)
 	params := make(map[string]string)
@@ -63,6 +64,7 @@ func (r *router) getRouter(method, path string) (*node, map[string]string) {
 
 	if node != nil {
 		parts := parsePattern(node.pattern)
+		//获取path里面param的值设置到context的params里
 		for index, part := range parts {
 			if part[0] == ':' {
 				params[part[1:]] = searchParts[index]
