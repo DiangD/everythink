@@ -30,7 +30,9 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 	}
 }
 
+//调用下一个中间件，该方法只能在中间件内部调用
 func (c *Context) Next() {
+	//第一次进入，++为0
 	c.index++
 	l := len(c.handlers)
 	for ; c.index < l; c.index++ {

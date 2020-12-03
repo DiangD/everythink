@@ -41,17 +41,20 @@ func (r *router) addRouter(method, pattern string, handler HandlerFunc) {
 	r.handlers[key] = handler
 }
 
+//使用中间件后的流程 c.handlers = {logger...} logger part1 -> middleware2 -> ... ->handler -> ... part2 -> logger
 func (r *router) handle(c *Context) {
 	node, params := r.getRouter(c.Method, c.Path)
 	if node != nil {
 		c.Params = params
 		key := c.Method + "-" + node.pattern
+		//将path对应的handler添加到handlers尾部，中间件按添加顺序执行
 		c.handlers = append(c.handlers, r.handlers[key])
 	} else {
 		c.handlers = append(c.handlers, func(c *Context) {
 			c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
 		})
 	}
+	//执行第一个中间件
 	c.Next()
 }
 

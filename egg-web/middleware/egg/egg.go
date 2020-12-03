@@ -33,6 +33,7 @@ func (group *RouterGroup) Group(prefix string) *RouterGroup {
 	return newGroup
 }
 
+//使用中间件
 func (group *RouterGroup) Use(handlers ...HandlerFunc) {
 	group.middlewares = append(group.middlewares, handlers...)
 }
