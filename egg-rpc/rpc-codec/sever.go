@@ -11,13 +11,16 @@ import (
 	"sync"
 )
 
+//标志一个egg rpc调用
 const MagicNumber = 0x3bef5c
 
+//Option  魔数、编码类型
 type Option struct {
 	MagicNumber int
 	CodecType   codec.Type
 }
 
+//DefaultOption 默认
 var DefaultOption = Option{
 	MagicNumber: MagicNumber,
 	CodecType:   codec.GobType,
@@ -36,8 +39,10 @@ func NewServer() *Server {
 	return &Server{}
 }
 
+//DefaultSever
 var DefaultSever = NewServer()
 
+//SeverConn 处理连接
 func (server *Server) SeverConn(conn io.ReadWriteCloser) {
 	defer conn.Close()
 	var opt Option
@@ -59,6 +64,7 @@ func (server *Server) SeverConn(conn io.ReadWriteCloser) {
 	server.serverCodec(f(conn))
 }
 
+//serverCodec 处理编码
 func (server *Server) serverCodec(cc codec.Codec) {
 	var (
 		lock sync.Mutex
@@ -99,6 +105,7 @@ func (server *Server) readRequest(cc codec.Codec) (*request, error) {
 		return nil, err
 	}
 	req := &request{h: h}
+	//参数类型默认为string
 	req.argv = reflect.New(reflect.TypeOf(""))
 	if err := cc.ReadBody(req.argv.Interface()); err != nil {
 		log.Println("rpc server: read argv err:", err)
