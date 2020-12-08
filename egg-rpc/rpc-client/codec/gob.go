@@ -24,18 +24,22 @@ func NewGobCodec(conn io.ReadWriteCloser) Codec {
 	}
 }
 
+//Close 关闭io
 func (c *GobCodec) Close() error {
 	return c.conn.Close()
 }
 
+//ReadHeader 读取header
 func (c *GobCodec) ReadHeader(h *Header) error {
 	return c.dec.Decode(h)
 }
 
+//ReadBody 读取body
 func (c *GobCodec) ReadBody(obj interface{}) error {
 	return c.dec.Decode(obj)
 }
 
+//Write 写入到header、body
 func (c *GobCodec) Write(h *Header, obj interface{}) error {
 	defer func() {
 		err := c.buf.Flush()

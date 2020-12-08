@@ -39,6 +39,7 @@ type Client struct {
 //断言，可以在编译器确定Client是否实现Closer接口，提前定位问题
 var _ io.Closer = (*Client)(nil)
 
+//NewClient 新建客户端
 func NewClient(conn net.Conn, opt *Option) (*Client, error) {
 	f, ok := codec.NewCodecFuncMap[opt.CodecType]
 	if !ok {
@@ -54,19 +55,22 @@ func NewClient(conn net.Conn, opt *Option) (*Client, error) {
 	return newClientCodec(f(conn), opt), nil
 }
 
+//newClientCodec 新建客户端编码器
 func newClientCodec(cc codec.Codec, opt *Option) *Client {
 	client := &Client{
-		seq:     1,
+		seq:     1, //初始seq=1，错误或无效seq为0
 		opt:     opt,
 		cc:      cc,
 		pending: make(map[uint64]*Call),
 	}
+	//开启异步处理请求
 	go client.receive()
 	return client
 }
 
 var ErrShutDown = errors.New("connection was shut down")
 
+//Close 关闭资源
 func (client *Client) Close() error {
 	client.mu.Lock()
 	defer client.mu.Unlock()
@@ -77,12 +81,14 @@ func (client *Client) Close() error {
 	return client.cc.Close()
 }
 
+//IsAvailable 客户端是否可用
 func (client *Client) IsAvailable() bool {
 	client.mu.Lock()
 	defer client.mu.Unlock()
 	return !client.closing && !client.shutdown
 }
 
+//registerCall 注册调用
 func (client *Client) registerCall(call *Call) (uint64, error) {
 	client.mu.Lock()
 	client.mu.Unlock()
@@ -95,6 +101,7 @@ func (client *Client) registerCall(call *Call) (uint64, error) {
 	return call.Seq, nil
 }
 
+//removeCall 移除调用
 func (client *Client) removeCall(seq uint64) *Call {
 	client.mu.Lock()
 	defer client.mu.Unlock()
@@ -103,6 +110,7 @@ func (client *Client) removeCall(seq uint64) *Call {
 	return call
 }
 
+//terminateCalls 终止调用
 func (client *Client) terminateCalls(err error) {
 	client.sending.Lock()
 	defer client.sending.Unlock()
@@ -179,6 +187,7 @@ func (client *Client) send(call *Call) {
 	client.sending.Lock()
 	defer client.sending.Unlock()
 
+	//注册调用，seq++
 	seq, err := client.registerCall(call)
 	if err != nil {
 		call.Error = err
@@ -199,6 +208,7 @@ func (client *Client) send(call *Call) {
 	}
 }
 
+//异步
 func (client *Client) Go(serviceMethod string, args, replay interface{}, done chan *Call) *Call {
 	if done == nil {
 		done = make(chan *Call, 10)
@@ -217,7 +227,9 @@ func (client *Client) Go(serviceMethod string, args, replay interface{}, done ch
 	return call
 }
 
+//一个同步调用
 func (client *Client) Call(serviceMethod string, args, replay interface{}) error {
+	//阻塞直到从chan接收返回值
 	call := <-client.Go(serviceMethod, args, replay, nil).Done
 	return call.Error
 }
