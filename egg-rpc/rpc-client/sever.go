@@ -21,7 +21,7 @@ type Option struct {
 }
 
 //DefaultOption 默认
-var DefaultOption = Option{
+var DefaultOption = &Option{
 	MagicNumber: MagicNumber,
 	CodecType:   codec.GobType,
 }
