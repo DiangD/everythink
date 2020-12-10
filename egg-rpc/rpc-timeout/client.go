@@ -97,7 +97,7 @@ func (client *Client) IsAvailable() bool {
 //registerCall 注册调用
 func (client *Client) registerCall(call *Call) (uint64, error) {
 	client.mu.Lock()
-	client.mu.Unlock()
+	defer client.mu.Unlock()
 	if client.closing || client.shutdown {
 		return 0, ErrShutDown
 	}
@@ -136,12 +136,16 @@ func (client *Client) receive() {
 	var h codec.Header
 	for err == nil {
 		h = codec.Header{}
-		if err = client.cc.ReadHeader(&h); err != nil {
+		err = client.cc.ReadHeader(&h)
+		log.Printf("rpc client header:%+v\n", h)
+		if err != nil {
 			break
 		}
 		call := client.removeCall(h.Seq)
+		log.Printf("rpc client call:%+v\n", call)
 		switch {
 		case call == nil:
+			log.Printf("rpc client call == nil header:%+v\n", h)
 			err = client.cc.ReadBody(nil)
 		case h.Error != "":
 			call.Error = fmt.Errorf(h.Error)
@@ -229,7 +233,6 @@ func (client *Client) send(call *Call) {
 		call.done()
 		return
 	}
-
 	client.header.ServiceMethod = call.ServiceMethod
 	client.header.Seq = seq
 	client.header.Error = ""
