@@ -281,8 +281,10 @@ func (client *Client) Call(ctx context.Context, serviceMethod string, args, repl
 	}
 }
 
+//NewHttpClient 处理http请求的客户端
 func NewHttpClient(conn net.Conn, opt *Option) (*Client, error) {
 	_, _ = io.WriteString(conn, fmt.Sprintf("CONNECT %s HTTP/1.0\n\n", defaultRPCPath))
+	//发送connect请求
 	resp, err := http.ReadResponse(bufio.NewReader(conn), &http.Request{Method: http.MethodConnect})
 	if err == nil && resp.Status == connected {
 		return NewClient(conn, opt)
@@ -297,7 +299,7 @@ func DialHTTP(network, address string, opts ...*Option) (*Client, error) {
 	return dialTimeout(NewHttpClient, network, address, opts...)
 }
 
-//XDial protocol@addr
+//XDial protocol@addr 请求格式：协议@ip
 func XDial(rpcAddr string, opts ...*Option) (*Client, error) {
 	parts := strings.Split(rpcAddr, "@")
 	if len(parts) != 2 {

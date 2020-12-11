@@ -230,12 +230,14 @@ const (
 )
 
 func (server *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	//监听connect请求
 	if req.Method != http.MethodConnect {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		_, _ = io.WriteString(w, "405 must connect\n")
 		return
 	}
+	//劫持请求，
 	conn, _, err := w.(http.Hijacker).Hijack()
 	if err != nil {
 		log.Println("rpc hijacking ", req.RemoteAddr, ": ", err.Error())
