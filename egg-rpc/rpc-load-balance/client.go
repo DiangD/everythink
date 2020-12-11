@@ -140,15 +140,15 @@ func (client *Client) receive() {
 	for err == nil {
 		h = codec.Header{}
 		err = client.cc.ReadHeader(&h)
-		log.Printf("rpc client header:%+v\n", h)
+		//log.Printf("rpc client header:%+v\n", h)
 		if err != nil {
 			break
 		}
 		call := client.removeCall(h.Seq)
-		log.Printf("rpc client call:%+v\n", call)
+		//log.Printf("rpc client call:%+v\n", call)
 		switch {
 		case call == nil:
-			log.Printf("rpc client call == nil header:%+v\n", h)
+			//log.Printf("rpc client call == nil header:%+v\n", h)
 			err = client.cc.ReadBody(nil)
 		case h.Error != "":
 			call.Error = fmt.Errorf(h.Error)

@@ -2,6 +2,7 @@ package xclient
 
 import (
 	"errors"
+	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -33,6 +34,7 @@ func NewMultiServersDiscovery(servers []string) *MultiServersDiscovery {
 		servers: servers,
 		r:       rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
+	discovery.index = rand.Intn(math.MaxInt32 - 1)
 	return discovery
 }
 
@@ -69,7 +71,7 @@ func (d *MultiServersDiscovery) Get(mode SelectMode) (string, error) {
 func (d *MultiServersDiscovery) GetAll() ([]string, error) {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
-	tmp := make([]string, 0, len(d.servers))
+	tmp := make([]string, len(d.servers), len(d.servers))
 	copy(tmp, d.servers)
 	return tmp, nil
 }
