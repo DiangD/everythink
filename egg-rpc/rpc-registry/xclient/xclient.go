@@ -87,6 +87,7 @@ func (xc *XClient) Broadcast(ctx context.Context, serviceMethod string, args, re
 	var e error
 	var mu sync.Mutex
 	replyDone := reply == nil
+	//发生错误，子协程会继续执行
 	ctx, cancel := context.WithCancel(ctx)
 	for _, server := range servers {
 		wg.Add(1)
@@ -101,6 +102,7 @@ func (xc *XClient) Broadcast(ctx context.Context, serviceMethod string, args, re
 			mu.Lock()
 			if err != nil && e == nil {
 				e = err
+				//发生错误，快速失败
 				cancel()
 			}
 			if err == nil && !replyDone {

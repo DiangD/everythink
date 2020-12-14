@@ -9,12 +9,16 @@ import (
 
 type EggRegistryDiscovery struct {
 	*MultiServersDiscovery
-	registry   string
+	registry   string //path
 	timeout    time.Duration
-	modifyTime time.Time
+	modifyTime time.Time //最后一个修改的时间
 }
 
 const defaultUpdateTimeout = time.Second * 10
+
+/*
+覆盖MultiServersDiscovery的实现
+*/
 
 func (d *EggRegistryDiscovery) Update(servers []string) error {
 	d.mu.Lock()
@@ -32,6 +36,7 @@ func (d *EggRegistryDiscovery) Refresh() error {
 		return nil
 	}
 	log.Println("rpc registry: refresh servers from registry", d.registry)
+	//从注册中心获取服务器列表
 	resp, err := http.Get(d.registry)
 	if err != nil {
 		log.Println("rpc registry refresh err:", err)
