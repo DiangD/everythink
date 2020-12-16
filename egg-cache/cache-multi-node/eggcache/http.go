@@ -20,14 +20,15 @@ type HTTPPool struct {
 	self        string
 	basePath    string
 	mu          sync.Mutex
-	peers       *consistenthash.Map
-	httpGetters map[string]*HTTPGetter
+	peers       *consistenthash.Map    //一致性hash
+	httpGetters map[string]*HTTPGetter //一个远程节点对应一个HTTPGetter
 }
 
 type HTTPGetter struct {
-	baseURL string
+	baseURL string //url
 }
 
+//Get 客户端
 func (g *HTTPGetter) Get(group, key string) ([]byte, error) {
 	u := fmt.Sprintf("%v%v/%v", g.baseURL, url.QueryEscape(group), url.QueryEscape(key))
 	resp, err := http.Get(u)
@@ -86,6 +87,7 @@ func (p *HTTPPool) Log(format string, v ...interface{}) {
 	log.Printf("[Server %s] %s", p.self, fmt.Sprintf(format, v...))
 }
 
+//Set 更新节点的节点列表
 func (p *HTTPPool) Set(peers ...string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -97,6 +99,7 @@ func (p *HTTPPool) Set(peers ...string) {
 	}
 }
 
+//PickPeer 从节点列表一致性hash选择适合的peer
 func (p *HTTPPool) PickPeer(key string) (PeerGetter, bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
