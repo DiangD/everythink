@@ -15,6 +15,7 @@ type Group struct {
 
 type callFunc func() (interface{}, error)
 
+//Do 高并发下，防止缓存穿透，多个请求一次查询
 func (g *Group) Do(key string, fn callFunc) (interface{}, error) {
 	g.mu.Lock()
 	if g.m == nil {
