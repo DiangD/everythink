@@ -1,0 +1,50 @@
+package schema
+
+import (
+	"eggorm/dialect"
+	"go/ast"
+	"reflect"
+)
+
+type Field struct {
+	Name string
+	Type string
+	Tag  string
+}
+
+type Schema struct {
+	Model      interface{}
+	Name       string
+	Fields     []*Field
+	FieldNames []string
+	fieldMap   map[string]*Field
+}
+
+func (schema *Schema) GetField(fieldName string) *Field {
+	return schema.fieldMap[fieldName]
+}
+
+func Parse(dest interface{}, dialect dialect.Dialect) *Schema {
+	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
+	schema := &Schema{
+		Model:    dest,
+		Name:     modelType.Name(),
+		fieldMap: make(map[string]*Field),
+	}
+	for i := 0; i < modelType.NumField(); i++ {
+		f := modelType.Field(i)
+		if !f.Anonymous && ast.IsExported(f.Name) {
+			field := &Field{
+				Name: f.Name,
+				Type: dialect.DataTypeOf(reflect.Indirect(reflect.New(f.Type))),
+			}
+			if v, ok := f.Tag.Lookup("eggorm"); ok {
+				field.Tag = v
+			}
+			schema.Fields = append(schema.Fields, field)
+			schema.FieldNames = append(schema.FieldNames, f.Name)
+			schema.fieldMap[f.Name] = field
+		}
+	}
+	return schema
+}
