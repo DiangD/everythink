@@ -22,7 +22,12 @@ func NewEngine(driverName, databaseName string) (e *Engine, err error) {
 		log.Error(err)
 		return
 	}
-	e = &Engine{db: db}
+	d, ok := dialect.GetDialect(driverName)
+	if !ok {
+		log.Errorf("d %s Not Found", driverName)
+		return
+	}
+	e = &Engine{db: db, dialect: d}
 	log.Info("Connect database success")
 	return
 }
