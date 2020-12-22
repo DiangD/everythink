@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+//sqlite3 方言配置
+
 type sqlite3 struct{}
 
 func (s *sqlite3) DataTypeOf(typ reflect.Value) string {

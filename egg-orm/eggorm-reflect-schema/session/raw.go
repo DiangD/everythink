@@ -8,12 +8,14 @@ import (
 	"strings"
 )
 
+//可复用session，对go sql包进行封装
+
 type Session struct {
-	db       *sql.DB
+	db       *sql.DB //db连接
 	dialect  dialect.Dialect
 	refTable *schema.Schema
-	sql      strings.Builder
-	sqlVars  []interface{}
+	sql      strings.Builder //sql
+	sqlVars  []interface{}   //sql参数
 }
 
 func New(db *sql.DB, dialect dialect.Dialect) *Session {

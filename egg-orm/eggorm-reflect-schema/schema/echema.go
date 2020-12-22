@@ -6,6 +6,8 @@ import (
 	"reflect"
 )
 
+//schema可理解为struct与数据库表的映射
+
 type Field struct {
 	Name string
 	Type string
@@ -24,6 +26,7 @@ func (schema *Schema) GetField(fieldName string) *Field {
 	return schema.fieldMap[fieldName]
 }
 
+//Parse 解析结构体生成schema
 func Parse(dest interface{}, dialect dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
 	schema := &Schema{

@@ -7,17 +7,20 @@ import (
 	"eggorm/session"
 )
 
+//Engine 用户操作数据库的入口
 type Engine struct {
 	db      *sql.DB
 	dialect dialect.Dialect
 }
 
 func NewEngine(driverName, databaseName string) (e *Engine, err error) {
+	//db连接
 	db, err := sql.Open(driverName, databaseName)
 	if err != nil {
 		log.Error(err)
 		return
 	}
+	//测试连接成功
 	if err = db.Ping(); err != nil {
 		log.Error(err)
 		return

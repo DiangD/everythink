@@ -7,11 +7,15 @@ import (
 	"sync"
 )
 
+//日志
+
 var (
+	//error
 	errorLog = log.New(os.Stdout, "\033[31m[error]\033[0m", log.LstdFlags|log.Lshortfile)
-	infoLog  = log.New(os.Stdout, "\033[34m[info]\033[0m ", log.LstdFlags|log.Lshortfile)
-	loggers  = []*log.Logger{errorLog, infoLog}
-	mu       sync.Mutex
+	//info
+	infoLog = log.New(os.Stdout, "\033[34m[info]\033[0m ", log.LstdFlags|log.Lshortfile)
+	loggers = []*log.Logger{errorLog, infoLog}
+	mu      sync.Mutex
 
 	Error  = errorLog.Println
 	Errorf = errorLog.Printf
