@@ -6,7 +6,7 @@
 - [x] web
 - [ ] orm
 - [ ] rpc
-- [ ] cache
+- [x] cache
 
 
 ---
