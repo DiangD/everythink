@@ -6,7 +6,7 @@
 - [x] web
 - [ ] orm
 - [ ] rpc
-- [ ] cache 实现中
+- [x] cache
 
 
 ---
