@@ -90,3 +90,19 @@ func (s *Session) Count() (int64, error) {
 	}
 	return count, nil
 }
+
+func (s *Session) Where(desc string, args ...interface{}) *Session {
+	var vars []interface{}
+	s.clause.Set(clause.WHERE, append(append(vars, desc), args...)...)
+	return s
+}
+
+func (s *Session) Limit(num int) *Session {
+	s.clause.Set(clause.LIMIT, num)
+	return s
+}
+
+func (s *Session) Order(desc string) *Session {
+	s.clause.Set(clause.ORDER, desc)
+	return s
+}
