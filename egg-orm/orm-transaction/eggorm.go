@@ -48,6 +48,7 @@ func (engine *Engine) NewSession() *session.Session {
 
 type TxFunc func(s *session.Session) (interface{}, error)
 
+//Transaction 快捷的事务入口
 func (engine *Engine) Transaction(f TxFunc) (result interface{}, err error) {
 	s := engine.NewSession()
 	if err = s.Begin(); err != nil {

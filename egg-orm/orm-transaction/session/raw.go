@@ -21,6 +21,7 @@ type Session struct {
 	sqlVars  []interface{}   //sql参数
 }
 
+//CommonDB tx/db implemented
 type CommonDB interface {
 	Query(query string, args ...interface{}) (*sql.Rows, error)
 	QueryRow(query string, args ...interface{}) *sql.Row
@@ -44,6 +45,7 @@ func (s *Session) Clear() {
 }
 
 func (s *Session) DB() CommonDB {
+	//选择是自动提交还是事务提交
 	if s.tx != nil {
 		return s.tx
 	}

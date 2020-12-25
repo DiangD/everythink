@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// 钩子的类型
 const (
 	BeforeInsert = "BeforeInsert"
 	AfterInsert  = "AfterInsert"
@@ -19,6 +20,7 @@ const (
 	AfterQuery  = "AfterQuery"
 )
 
+//CallMethod 通过反射调用函数
 func (s *Session) CallMethod(method string, value interface{}) {
 	fm := reflect.ValueOf(s.RefTable().Model).MethodByName(method)
 	if value != nil {

@@ -57,6 +57,7 @@ func (s *Session) Find(values interface{}) error {
 	return rows.Close()
 }
 
+//Update
 func (s *Session) Update(kv ...interface{}) (int64, error) {
 	s.CallMethod(BeforeUpdate, nil)
 	m, ok := kv[0].(map[string]interface{})
@@ -76,6 +77,7 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 	return res.RowsAffected()
 }
 
+//Delete
 func (s *Session) Delete() (int64, error) {
 	s.CallMethod(BeforeDelete, nil)
 	s.clause.Set(clause.DELETE, s.RefTable().Name)
@@ -88,6 +90,7 @@ func (s *Session) Delete() (int64, error) {
 	return result.RowsAffected()
 }
 
+//Count 中间操作链式调用
 func (s *Session) Count() (int64, error) {
 	s.clause.Set(clause.COUNT, s.RefTable().Name)
 	sql, vars := s.clause.Build(clause.COUNT, clause.WHERE)
@@ -99,17 +102,20 @@ func (s *Session) Count() (int64, error) {
 	return count, nil
 }
 
+//Where 中间操作链式调用
 func (s *Session) Where(desc string, args ...interface{}) *Session {
 	var vars []interface{}
 	s.clause.Set(clause.WHERE, append(append(vars, desc), args...)...)
 	return s
 }
 
+//Limit 中间操作链式调用
 func (s *Session) Limit(num int) *Session {
 	s.clause.Set(clause.LIMIT, num)
 	return s
 }
 
+//Order 中间操作链式调用
 func (s *Session) Order(desc string) *Session {
 	s.clause.Set(clause.ORDER, desc)
 	return s
