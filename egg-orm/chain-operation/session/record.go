@@ -61,7 +61,7 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 			m[kv[i].(string)] = kv[i+1]
 		}
 	}
-	s.clause.Set(clause.UPDATE, s.RefTable(), m)
+	s.clause.Set(clause.UPDATE, s.RefTable().Name, m)
 	sql, vars := s.clause.Build(clause.UPDATE, clause.WHERE)
 	res, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 }
 
 func (s *Session) Delete() (int64, error) {
-	s.clause.Set(clause.DELETE, s.RefTable())
+	s.clause.Set(clause.DELETE, s.RefTable().Name)
 	sql, vars := s.clause.Build(clause.DELETE, clause.WHERE)
 	result, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
@@ -81,7 +81,7 @@ func (s *Session) Delete() (int64, error) {
 }
 
 func (s *Session) Count() (int64, error) {
-	s.clause.Set(clause.COUNT, s.RefTable())
+	s.clause.Set(clause.COUNT, s.RefTable().Name)
 	sql, vars := s.clause.Build(clause.COUNT, clause.WHERE)
 	row := s.Raw(sql, vars...).QueryRow()
 	var count int64

@@ -83,7 +83,7 @@ func _update(values ...interface{}) (string, []interface{}) {
 	vars := make([]interface{}, 0)
 	m := values[1].(map[string]interface{})
 	for k, v := range m {
-		keys = append(keys, k)
+		keys = append(keys, k+" = ?")
 		vars = append(vars, v)
 	}
 	return fmt.Sprintf("UPDATE %s SET %s", tableName, strings.Join(keys, ",")), vars
